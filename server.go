@@ -20,12 +20,27 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello!")
 }
 
-func main() {
+func formHandler(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		fmt.Fprintf(w, "ParseForm() err: %v", err)
+		return
+	}
+	fmt.Fprintf(w, "POST request successful")
+	name := r.FormValue("name")
+	address := r.FormValue("address")
 
-	fileServer := http.FileServer(http.Dir("./static")) // creates the file server object using the FileServer function. 
-    http.Handle("/", fileServer) // the Handle route, which accepts a path and the fileserver
+	fmt.Fprintf(w, "Name = %s\n", name)
+	fmt.Fprintf(w, "Address = %s\n", address)
+}
+
+func main() {
+	fileServer := http.FileServer(http.Dir("./static")) // creates the file server object using the FileServer function.
+	
+	http.Handle("/", fileServer)                        // the Handle route, which accepts a path and the fileserver
 
 	http.HandleFunc("/hello", helloHandler) // Update this line of code
+
+	http.HandleFunc("/form", formHandler)
 
 	fmt.Printf("Starting server at port 8080\n")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
