@@ -2,14 +2,33 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 )
 
-func main() {
-	http.HandleFunc("/", SimpleServer)
-	http.ListenAndServe(":8080", nil)
+func helloHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/hello" {
+		http.Error(w, "404 not found.", http.StatusNotFound)
+		return
+	}
+
+	if r.Method != "GET" {
+		http.Error(w, "Method is not supported.", http.StatusNotFound)
+		return
+	}
+
+	fmt.Fprintf(w, "Hello!")
 }
 
-func SimpleServer(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Ole Out Please %s", r.URL.Path[1:])
+func main() {
+
+	fileServer := http.FileServer(http.Dir("./static")) // creates the file server object using the FileServer function. 
+    http.Handle("/", fileServer) // the Handle route, which accepts a path and the fileserver
+
+	http.HandleFunc("/hello", helloHandler) // Update this line of code
+
+	fmt.Printf("Starting server at port 8080\n")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatal(err)
+	}
 }
