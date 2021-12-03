@@ -69,7 +69,11 @@ func ascii(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userBanner := r.FormValue("font")
-	userString := r.FormValue("uString")
+	var userString string = r.FormValue("uString")
+
+	if strings.Contains(userString, "\n") {
+		userString = strings.Replace(userString, "\r\n", " ", -1)
+	}
 
 	splitLines := SplitLines(userString)
 
