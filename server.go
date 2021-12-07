@@ -72,7 +72,7 @@ func ascii(w http.ResponseWriter, r *http.Request) {
 	var userString string = r.FormValue("uString")
 
 	if strings.Contains(userString, "\n") {
-		userString = strings.Replace(userString, "\r\n", " ", -1)
+		userString = strings.Replace(userString, "\r\n", "\\n", -1)
 	}
 
 	splitLines := SplitLines(userString)
@@ -127,7 +127,7 @@ func ascii(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", index)
-	http.HandleFunc("/ascii-art", ascii)
+	http.HandleFunc("/ascii", ascii)
 
 	http.ListenAndServe(":8080", nil)
 }
