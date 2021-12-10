@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	"fmt"
+	//"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -100,7 +100,7 @@ func ascii(w http.ResponseWriter, r *http.Request) {
 	var eString []string
 
 	for j, val := range splitLines {
-		for i := 1; i < 9; i++ {
+		for i := 0; i < 9; i++ {
 			for k := 0; k < len(val); k++ {
 				eString = append(eString, charMap[int(splitLines[j][k])][i])
 			}
@@ -108,21 +108,21 @@ func ascii(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	sAscii := strings.Join(eString, "")
-	fmt.Fprintf(w, sAscii)
-	// fmt.Fprintf(w, userBanner)
+	Ascii := strings.Join(eString, "")
+	// fmt.Fprintf(w, Ascii)
+	// // fmt.Fprintf(w, userBanner)
 
 	d := struct {
 		Banner string
 		String string
-		sAscii string
+		Ascii string
 	}{
 		Banner: userBanner,
 		String: userString,
-		sAscii: sAscii,
+		Ascii: Ascii,
 	}
 
-	tpl.ExecuteTemplate(w, "ascii.gohtml", d)
+	tpl.ExecuteTemplate(w, "index.gohtml", d)
 }
 
 func main() {
