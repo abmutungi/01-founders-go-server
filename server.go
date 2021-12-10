@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	//"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -17,7 +16,12 @@ func init() {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	tpl.ExecuteTemplate(w, "index.gohtml", nil)
+	if r.URL.Path != "/" {
+		http.Error(w, "404 not found.", http.StatusNotFound)
+		return
+	} else {
+		tpl.ExecuteTemplate(w, "index.gohtml", nil)
+	}
 }
 
 func ReadLines(path string) ([]string, error) {
@@ -63,6 +67,12 @@ func SplitLines(s string) [][]byte {
 }
 
 func ascii(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		if err := recover(); err != nil {
+			http.Error(w, "500 Internal Server Error ", http.StatusInternalServerError)
+		}
+	}()
+
 	if r.Method != "POST" {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -70,6 +80,11 @@ func ascii(w http.ResponseWriter, r *http.Request) {
 
 	userBanner := r.FormValue("font")
 	var userString string = r.FormValue("uString")
+
+	if userBanner == "" || userString == "£" || userString == "" {
+		http.Error(w, "400 bad request: incorrect string.", http.StatusBadRequest)
+		return
+	}
 
 	if strings.Contains(userString, "\n") {
 		userString = strings.Replace(userString, "\r\n", "\\n", -1)
@@ -109,17 +124,15 @@ func ascii(w http.ResponseWriter, r *http.Request) {
 	}
 
 	Ascii := strings.Join(eString, "")
-	// fmt.Fprintf(w, Ascii)
-	// // fmt.Fprintf(w, userBanner)
 
 	d := struct {
 		Banner string
 		String string
-		Ascii string
+		Ascii  string
 	}{
 		Banner: userBanner,
 		String: userString,
-		Ascii: Ascii,
+		Ascii:  Ascii,
 	}
 
 	tpl.ExecuteTemplate(w, "index.gohtml", d)
