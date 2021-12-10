@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -25,11 +24,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 func ReadLines(path string) ([]string, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
+	file, _ := os.Open(path)
 
 	var lines []string
 	scanner := bufio.NewScanner(file)
@@ -92,10 +87,7 @@ func ascii(w http.ResponseWriter, r *http.Request) {
 
 	splitLines := SplitLines(userString)
 
-	lines, err := ReadLines(userBanner + ".txt")
-	if err != nil {
-		log.Fatalf("ReadLines: %s", err)
-	}
+	lines, _ := ReadLines(userBanner + ".txt")
 
 	/*The line below uses the make method to make a map
 	and uses a start point of 32 to match up the ascii values
